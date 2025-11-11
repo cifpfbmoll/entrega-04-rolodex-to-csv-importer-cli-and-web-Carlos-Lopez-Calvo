@@ -55,7 +55,7 @@ class Autoload
      * are not automatically loaded, but can be loaded with the
      * helper() function.
      */
-    public $helpers = [];
+    public $helpers = ['ContactHelper'];
 
     /**
      * -------------------------------------------------------------------

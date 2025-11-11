@@ -66,13 +66,29 @@
         <div class="hero-section">
             <h1 class="mb-3">📇 Gestor de Contactos</h1>
             <p class="mb-4">Convierte tu Rolodex físico en una agenda digital moderna</p>
-            <div class="d-flex justify-content-center gap-2">
+            <div class="d-flex justify-content-center gap-2 flex-wrap">
                 <a href="/contacts/create" class="btn btn-light">
                     <i class="bi bi-person-plus"></i> Añadir Contacto
                 </a>
-                <a href="/contacts/export" class="btn btn-outline-light">
-                    <i class="bi bi-download"></i> Exportar CSV
-                </a>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="bi bi-download"></i> Exportar
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/contacts/export"><i class="bi bi-filetype-csv"></i> CSV</a></li>
+                        <li><a class="dropdown-item" href="/contacts/export/vcard"><i class="bi bi-phone"></i> vCard</a></li>
+                        <li><a class="dropdown-item" href="/contacts/export/pdf"><i class="bi bi-filetype-pdf"></i> PDF/HTML</a></li>
+                    </ul>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="bi bi-magic"></i> AI
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/ai/duplicates"><i class="bi bi-intersect"></i> Detectar duplicados</a></li>
+                        <li><a class="dropdown-item" href="/ai/parse"><i class="bi bi-clipboard"></i> Extraer desde texto</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
         
@@ -101,13 +117,54 @@
                         <i class="bi bi-people-fill me-2"></i>
                         Lista de Contactos
                     </h4>
-                    <span class="stats-badge">
-                        <i class="bi bi-person-badge me-1"></i>
-                        <?= count($contacts) ?> contacto(s)
-                    </span>
+                    <div class="d-flex align-items-center gap-2">
+                        <?php $org = session()->get('org'); if (!empty($org['id'])): ?>
+                            <span class="badge bg-success">Org: <?= esc($org['name']) ?></span>
+                        <?php endif; ?>
+                        <span class="stats-badge">
+                            <i class="bi bi-person-badge me-1"></i>
+                            <?= count($contacts) ?> contacto(s)
+                        </span>
+                        <a class="btn btn-sm btn-outline-light" href="/org">Organizaciones</a>
+                        <a class="btn btn-sm btn-outline-light" href="/settings">Configuración</a>
+                    </div>
                 </div>
             </div>
             <div class="card-body">
+                <!-- Search and Import Section -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <form method="get" action="/contacts" class="d-flex">
+                            <input type="text" 
+                                   class="form-control me-2" 
+                                   name="search" 
+                                   placeholder="Buscar por nombre, teléfono o email..." 
+                                   value="<?= esc($search) ?>">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i>
+                            </button>
+                            <?php if (!empty($search)): ?>
+                                <a href="/contacts" class="btn btn-outline-secondary ms-2">
+                                    <i class="bi bi-x"></i>
+                                </a>
+                            <?php endif; ?>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <form method="post" action="/contacts/import" enctype="multipart/form-data" class="d-flex">
+                            <?= csrf_field() ?>
+                            <input type="file" 
+                                   class="form-control me-2" 
+                                   name="csv_file" 
+                                   accept=".csv" 
+                                   required>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-upload"></i> Importar CSV
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
                 <?php if (empty($contacts)): ?>
                     <div class="text-center py-5">
                         <i class="bi bi-person-x display-1 text-muted"></i>
@@ -133,6 +190,7 @@
                                     <th><i class="bi bi-person me-1"></i> Nombre</th>
                                     <th><i class="bi bi-telephone me-1"></i> Teléfono</th>
                                     <th><i class="bi bi-envelope me-1"></i> Email</th>
+                                    <th><i class="bi bi-gear me-1"></i> Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -160,6 +218,19 @@
                                         <?php else: ?>
                                             <span class="text-muted">-</span>
                                         <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="/contacts/edit/<?= $contact['index'] ?>" class="btn btn-outline-primary" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="/contacts/delete/<?= $contact['index'] ?>" 
+                                               class="btn btn-outline-danger" 
+                                               title="Eliminar"
+                                               onclick="return confirm('¿Estás seguro de eliminar este contacto?')">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>

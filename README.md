@@ -1,141 +1,94 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/keP9ug1F)
-# Rolodex to CSV CLI Importer
+# Rolodex Contact Importer — CLI + Web + Multiusuario + AI
 
-A CodeIgniter 4 custom command-line tool for importing contact information from physical Rolodex cards into a digital CSV format.
+Herramienta para digitalizar contactos de un Rolodex físico a CSV, con interfaz CLI, web (CodeIgniter 4), multiusuario básico, organizaciones (CSV compartido), exportaciones y utilidades de “AI” ligera.
 
-## 📋 Overview
+## 📦 Requisitos
+- PHP 8.0+ (recomendado 8.1/8.2)
+- Extensión intl habilitada si instalas dependencias con Composer
+- Servidor embebido de PHP o cualquier servidor compatible
 
-This command-line application allows travel agents (or any user with physical contact cards) to manually enter contact information and save it to a CSV file for digital recordkeeping.
-
-## 🚀 Features
-
-- **Interactive CLI Input**: Prompts for Name, Phone, and Email
-- **CSV Storage**: Automatically appends data to `writable/contacts.csv`
-- **Header Management**: Creates CSV header automatically on first use
-- **Continuous Loop**: Enter multiple contacts in one session
-- **Easy Exit**: Type "exit" or "quit" at the Name prompt to finish
-
-## 📁 File Structure
-
-```
-rolodex/
-├── app/
-│   └── Commands/
-│       └── ContactImport.php    # Main command file
-├── writable/
-│   └── contacts.csv             # Generated CSV file (created automatically)
-└── spark                         # CodeIgniter 4 CLI entry point
-```
-
-## 🔧 Installation
-
-### If you already have a CodeIgniter 4 project:
-
-1. Copy `app/Commands/ContactImport.php` to your project's `app/Commands/` directory
-2. Ensure your `writable/` directory has write permissions (755 or 777)
-
-### If starting from scratch:
-
-1. Install CodeIgniter 4:
+## 🚀 Arranque rápido
+1) Clona el repo y sitúate en la carpeta del proyecto.
+2) Opcional (según tu flujo): instala dependencias de CI4
    ```bash
-   composer create-project codeigniter4/appstarter rolodex
-   cd rolodex
+   composer install
+   # Si falla por ext-intl:
+   composer install --ignore-platform-req=ext-intl
    ```
-
-2. Copy the `ContactImport.php` file to `app/Commands/`
-
-3. Ensure proper permissions:
+3) Lanza el servidor:
    ```bash
-   chmod -R 755 writable/
+   php -S localhost:8080 -t public
    ```
+4) Abre `http://localhost:8080`.
 
-## 💻 Usage
-
-Run the command from your project root:
-
+## 💻 Modo CLI
+Alta rápida de contactos por terminal:
 ```bash
-php spark import:contacts
+php contact-importer.php
+```
+Guarda en `writable/contacts.csv` (modo global sin sesión).
+
+## 🌐 Modo Web
+Rutas clave:
+- `/register` y `/login`: registro e inicio de sesión.
+- `/contacts`: lista, búsqueda, crear, editar, eliminar, importar CSV y exportar.
+- `/contacts/export`: CSV.
+- `/contacts/export/vcard` (Premium).
+- `/contacts/export/pdf` (Premium).
+- `/ai/duplicates` y `/ai/parse` (Premium): duplicados y extracción desde texto.
+- `/org`: organizaciones del usuario (crear/seleccionar/salir).
+- `/settings`: idioma y plan (free/premium).
+
+Flujo recomendado:
+1) Regístrate en `/register` o inicia sesión en `/login`.
+2) Gestiona contactos en `/contacts` (CRUD, búsqueda, import/export).
+3) Crea una organización en `/org/create` y selecciónala en `/org` para CSV compartido.
+4) Cambia a Premium en `/settings` para vCard/PDF/AI.
+
+## 🧠 AI ligera (sin servicios externos)
+- Duplicados por nombre/email/teléfono normalizados.
+- Parser de contacto desde texto libre.
+- Búsqueda semántica simple (sinónimos básicos).
+
+## 🏷️ Multiusuario y Organizaciones
+- Usuarios en `writable/users.json` (contraseña con hash).
+- Contactos por usuario: `writable/users/{userId}/contacts.csv`.
+- Organizaciones con CSV compartido: `writable/orgs/{orgId}/contacts.csv`.
+- Badge de organización activa en la cabecera del listado.
+
+## 📤 Import/Export
+- Importar CSV desde `/contacts`.
+- Exportar:
+  - CSV: libre.
+  - vCard (.vcf): Premium.
+  - PDF/HTML: Premium.
+
+## 📁 Estructura relevante
+```
+app/
+  Controllers/ (Contacts, Auth, Org, AI, Settings)
+  Helpers/     (ContactHelper, OrgHelper, AIHelper)
+  Views/       (contacts, auth, org, ai, settings)
+public/index.php
+contact-importer.php  # CLI standalone
+writable/
+  contacts.csv        # Global (sin sesión)
+  users/{id}/contacts.csv
+  orgs/{id}/contacts.csv
 ```
 
-### Example Session
+## ✅ Características
+- CLI: entrada rápida.
+- Web: Bootstrap 5, tabla, búsqueda, métricas, tel/mail.
+- CRUD completo.
+- Import CSV, export CSV/vCard/PDF (premium).
+- AI: duplicados y parser desde texto.
+- Multiusuario + organizaciones.
+- Ajustes: idioma y plan.
 
-```
-===========================================
-  Rolodex Contact Importer
-===========================================
+## 🔒 Notas
+- Datos en `writable/`. Para producción real, migrar a BD y roles/ACL.
+- ext-intl puede ser necesaria para instalar dependencias con Composer.
 
-Enter contact information from your physical Rolodex.
-Type "exit" or "quit" at the Name prompt to finish.
-
-CSV file initialized: /path/to/writable/contacts.csv
-
--------------------------------------------
-Full Name: Victor Frankenstein
-Phone Number: 555-776-2323
-Email Address: doctor@nodedojo.com
-✓ Contact saved successfully!
-
--------------------------------------------
-Full Name: Jane Smith
-Phone Number: 555-123-4567
-Email Address: jane.smith@example.com
-✓ Contact saved successfully!
-
--------------------------------------------
-Full Name: exit
-
-Import session completed. Total contacts added: 2
-CSV file location: /path/to/writable/contacts.csv
-```
-
-## 📄 CSV Output Format
-
-The generated CSV file (`writable/contacts.csv`) has the following structure:
-
-```csv
-Name,Phone,Email
-Victor Frankenstein,555-776-2323,doctor@nodedojo.com
-Jane Smith,555-123-4567,jane.smith@example.com
-```
-
-## ⚙️ Technical Details
-
-- **Framework**: CodeIgniter 4
-- **Command Group**: Import
-- **Command Name**: `import:contacts`
-- **PHP Requirements**: PHP 7.4 or higher (CodeIgniter 4 requirement)
-- **Dependencies**: Uses only standard CodeIgniter 4 CLI libraries
-
-## 🛠️ Features Implemented
-
-✅ CodeIgniter 4 custom spark command  
-✅ Interactive CLI input using `CLI::prompt()`  
-✅ CSV file creation and append functionality  
-✅ Automatic header row creation  
-✅ Continuous input loop with exit condition  
-✅ Input validation (empty name check)  
-✅ Success/error feedback messages  
-✅ Contact counter for session summary  
-
-## 📝 Notes
-
-- The CSV file is stored in the `writable/` directory for security and proper permissions
-- Phone and email fields can be empty if needed
-- Name field is required (cannot be empty)
-- The command uses standard PHP CSV functions (`fputcsv`) for proper formatting
-- All data is trimmed before saving to remove extra whitespace
-
-## 🔒 Security Considerations
-
-- File is stored in `writable/` directory (not web-accessible by default)
-- No web interface or routes (CLI-only application)
-- Uses CodeIgniter's built-in WRITEPATH constant for secure file location
-
-## 🤝 Support
-
-For CodeIgniter 4 documentation, visit: https://codeigniter.com/user_guide/
-
----
-
-**Created for**: Travel agents and professionals who need to digitize physical contact information  
-**Use Case**: Converting physical Rolodex cards to digital CSV format
+## 🤝 Recursos
+CodeIgniter Docs: https://codeigniter.com/user_guide/
