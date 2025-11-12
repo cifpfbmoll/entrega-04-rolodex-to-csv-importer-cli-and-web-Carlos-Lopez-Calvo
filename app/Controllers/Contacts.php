@@ -8,7 +8,10 @@ class Contacts extends BaseController
     // 📋 Mostrar todos los contactos
     public function index()
     {
-        helper('ContactHelper');
+        // Cargar helper explícitamente - usar require si helper() no funciona
+        if (!function_exists('readContactsFromCsv')) {
+            require_once APPPATH . 'Helpers/ContactHelper.php';
+        }
         
         // Búsqueda
         $search = $this->request->getGet('search');
@@ -32,7 +35,10 @@ class Contacts extends BaseController
     // 💾 Guardar nuevo contacto
     public function store()
     {
-        helper('ContactHelper');
+        // Cargar helper explícitamente
+        if (!function_exists('addContactToCsv')) {
+            require_once APPPATH . 'Helpers/ContactHelper.php';
+        }
         
         // Validar datos simples
         $name = $this->request->getPost('name');
@@ -59,7 +65,10 @@ class Contacts extends BaseController
     // ✏️ Mostrar formulario de edición
     public function edit($index)
     {
-        helper('ContactHelper');
+        // Cargar helper explícitamente
+        if (!function_exists('readContactsFromCsv')) {
+            require_once APPPATH . 'Helpers/ContactHelper.php';
+        }
         
         $contacts = readContactsFromCsv();
         
@@ -76,7 +85,10 @@ class Contacts extends BaseController
     // 💾 Actualizar contacto
     public function update($index)
     {
-        helper('ContactHelper');
+        // Cargar helper explícitamente
+        if (!function_exists('updateContactInCsv')) {
+            require_once APPPATH . 'Helpers/ContactHelper.php';
+        }
         
         // Validar datos
         $name = $this->request->getPost('name');
@@ -103,7 +115,10 @@ class Contacts extends BaseController
     // 🗑️ Eliminar contacto
     public function delete($index)
     {
-        helper('ContactHelper');
+        // Cargar helper explícitamente
+        if (!function_exists('deleteContactFromCsv')) {
+            require_once APPPATH . 'Helpers/ContactHelper.php';
+        }
         
         if (deleteContactFromCsv($index)) {
             return redirect()->to('/contacts')->with('success', '¡Contacto eliminado correctamente!');
@@ -115,7 +130,10 @@ class Contacts extends BaseController
     // 📥 Importar contactos desde CSV
     public function import()
     {
-        helper('ContactHelper');
+        // Cargar helper explícitamente
+        if (!function_exists('addContactToCsv')) {
+            require_once APPPATH . 'Helpers/ContactHelper.php';
+        }
         
         $file = $this->request->getFile('csv_file');
         
@@ -162,7 +180,6 @@ class Contacts extends BaseController
     // 📥 Exportar a CSV
     public function export()
     {
-        helper('ContactHelper');
         $user = session()->get('user');
         $csvFile = $user ? (WRITEPATH . 'users/' . $user['id'] . '/contacts.csv') : (WRITEPATH . 'contacts.csv');
 
@@ -177,7 +194,10 @@ class Contacts extends BaseController
     // 📥 Exportar a vCard
     public function exportVcard()
     {
-        helper('ContactHelper');
+        // Cargar helper explícitamente
+        if (!function_exists('readContactsFromCsv')) {
+            require_once APPPATH . 'Helpers/ContactHelper.php';
+        }
         // Plan gate
         if ((session()->get('plan') ?? 'free') !== 'premium') {
             return redirect()->to('/settings')->with('error', 'Requiere plan Premium');
@@ -213,7 +233,10 @@ class Contacts extends BaseController
     // 📥 Exportar a PDF (básico)
     public function exportPdf()
     {
-        helper('ContactHelper');
+        // Cargar helper explícitamente
+        if (!function_exists('readContactsFromCsv')) {
+            require_once APPPATH . 'Helpers/ContactHelper.php';
+        }
         if ((session()->get('plan') ?? 'free') !== 'premium') {
             return redirect()->to('/settings')->with('error', 'Requiere plan Premium');
         }

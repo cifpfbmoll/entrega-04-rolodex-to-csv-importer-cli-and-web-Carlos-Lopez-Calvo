@@ -29,6 +29,19 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
+                <?php if (session()->getFlashdata('success')): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <?= session()->getFlashdata('success') ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <script>
+                        // Redirect automático si hay mensaje de éxito (registro exitoso)
+                        setTimeout(function() {
+                            window.location.href = '/contacts';
+                        }, 500);
+                    </script>
+                <?php endif; ?>
                 <form method="post" action="/register">
                     <?= csrf_field() ?>
                     <div class="mb-3">

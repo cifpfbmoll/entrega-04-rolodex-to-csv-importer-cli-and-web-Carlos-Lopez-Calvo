@@ -24,6 +24,24 @@ class Modules
 
     /**
      * -------------------------------------------------------------------
+     * Discover In Composer
+     * -------------------------------------------------------------------
+     *
+     * If true, the system will also discover modules from Composer packages.
+     */
+    public $discoverInComposer = true;
+
+    /**
+     * -------------------------------------------------------------------
+     * Composer Packages
+     * -------------------------------------------------------------------
+     *
+     * An array of Composer package names that should be discovered.
+     */
+    public $composerPackages = [];
+
+    /**
+     * -------------------------------------------------------------------
      * Auto-Discover Paths
      * -------------------------------------------------------------------
      *

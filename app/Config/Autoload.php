@@ -55,7 +55,7 @@ class Autoload
      * are not automatically loaded, but can be loaded with the
      * helper() function.
      */
-    public $helpers = ['ContactHelper'];
+    public $helpers = ['url', 'form', 'array', 'filesystem', 'ContactHelper'];
 
     /**
      * -------------------------------------------------------------------
@@ -65,5 +65,5 @@ class Autoload
      * If you want to automatically load helper files, set this to
      * true. The files will be loaded on every request.
      */
-    public $autoLoadHelpers = false;
+    public $autoLoadHelpers = true;
 }

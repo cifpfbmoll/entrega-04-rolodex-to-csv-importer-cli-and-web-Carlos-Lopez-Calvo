@@ -20,6 +20,17 @@ class App extends BaseConfig
 
     /**
      * -------------------------------------------------------------------
+     * Allowed Hostnames
+     * -------------------------------------------------------------------
+     *
+     * When running under a reverse proxy, you might want to restrict
+     * which hostnames are allowed. This is a security measure to prevent
+     * host header injection attacks.
+     */
+    public array $allowedHostnames = [];
+
+    /**
+     * -------------------------------------------------------------------
      * Index File
      * -------------------------------------------------------------------
      *
@@ -200,7 +211,7 @@ class App extends BaseConfig
      * proxy IP addresses from which CodeIgniter should trust headers such as
      * HTTP_X_FORWARDED_FOR and HTTP_CLIENT_IP.
      */
-    public $proxyIPs = '';
+    public $proxyIPs = [];
 
     /**
      * -------------------------------------------------------------------

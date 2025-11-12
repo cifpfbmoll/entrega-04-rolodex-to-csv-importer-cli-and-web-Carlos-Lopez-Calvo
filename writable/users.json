@@ -1,0 +1,16 @@
+[
+    {
+        "id": "e738aacc4dc4f7d0",
+        "name": "del",
+        "email": "del@gmail.com",
+        "password": "$2y$10$zfVa9QP3JASk86AnEzHMe.w2NB7KIjRU56rfUwa04BFsZe3XKE96S",
+        "createdAt": "2025-11-12T10:31:41+00:00"
+    },
+    {
+        "id": "b5a2f7a772e48aca",
+        "name": "car",
+        "email": "car@gmail.com",
+        "password": "$2y$10$7wHjA4RK1BWAf8y8pLP2uevU0zt8ZepZRyNB\/nyQDRrLswK1Nx3aC",
+        "createdAt": "2025-11-12T10:46:23+00:00"
+    }
+]

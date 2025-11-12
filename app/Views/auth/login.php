@@ -35,6 +35,12 @@
                         <?= session()->getFlashdata('success') ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
+                    <script>
+                        // Redirect automático si hay mensaje de éxito (login exitoso)
+                        setTimeout(function() {
+                            window.location.href = '/contacts';
+                        }, 500);
+                    </script>
                 <?php endif; ?>
                 <form method="post" action="/login">
                     <?= csrf_field() ?>

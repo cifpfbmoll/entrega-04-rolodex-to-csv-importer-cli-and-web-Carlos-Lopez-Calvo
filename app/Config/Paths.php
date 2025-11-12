@@ -18,7 +18,7 @@ class Paths
      * This variable must contain the name of your "system" directory.
      * By default the system directory is located in your project root.
      */
-    public $systemDirectory = __DIR__ . '/../../vendor/codeigniter4/framework/system';
+    public $systemDirectory;
 
     /**
      * ---------------------------------------------------------------
@@ -31,7 +31,7 @@ class Paths
      * For more info please see the user guide:
      * https://codeigniter.com/user_guide/general/managing_apps.html
      */
-    public $appDirectory = __DIR__ . '/../../app';
+    public $appDirectory;
 
     /**
      * ---------------------------------------------------------------
@@ -42,7 +42,7 @@ class Paths
      * By default the "writable" directory is located inside your
      * application directory.
      */
-    public $writableDirectory = __DIR__ . '/../../writable';
+    public $writableDirectory;
 
     /**
      * ---------------------------------------------------------------
@@ -53,7 +53,7 @@ class Paths
      * By default the "tests" directory is located inside your
      * application directory.
      */
-    public $testsDirectory = __DIR__ . '/../../tests';
+    public $testsDirectory;
 
     /**
      * ---------------------------------------------------------------
@@ -65,7 +65,7 @@ class Paths
      * this is in "app/Views". This value is used by the core View
      * class when locating view files.
      */
-    public $viewDirectory = __DIR__ . '/../../app/Views';
+    public $viewDirectory;
 
     /**
      * ---------------------------------------------------------------
@@ -75,7 +75,7 @@ class Paths
      * This variable must contain the name of the directory that
      * contains the "hammer" command line utility.
      */
-    public $hammerDirectory = __DIR__ . '/../../vendor/codeigniter4/framework';
+    public $hammerDirectory;
 
     /**
      * ---------------------------------------------------------------
@@ -86,5 +86,16 @@ class Paths
      * contains the "namespace root directory". By default this is
      * the "src" directory.
      */
-    public $namespaceRootDirectory = __DIR__ . '/../../src';
+    public $namespaceRootDirectory;
+
+    public function __construct()
+    {
+        $this->appDirectory = realpath(__DIR__ . '/../../app') ?: __DIR__ . '/../../app';
+        $this->systemDirectory = realpath(__DIR__ . '/../../vendor/codeigniter4/framework/system') ?: __DIR__ . '/../../vendor/codeigniter4/framework/system';
+        $this->writableDirectory = realpath(__DIR__ . '/../../writable') ?: __DIR__ . '/../../writable';
+        $this->testsDirectory = realpath(__DIR__ . '/../../tests') ?: __DIR__ . '/../../tests';
+        $this->viewDirectory = realpath(__DIR__ . '/../../app/Views') ?: __DIR__ . '/../../app/Views';
+        $this->hammerDirectory = realpath(__DIR__ . '/../../vendor/codeigniter4/framework') ?: __DIR__ . '/../../vendor/codeigniter4/framework';
+        $this->namespaceRootDirectory = realpath(__DIR__ . '/../../src') ?: __DIR__ . '/../../src';
+    }
 }

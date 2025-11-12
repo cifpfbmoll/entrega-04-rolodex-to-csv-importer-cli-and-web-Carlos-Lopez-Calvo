@@ -71,11 +71,11 @@ $routes->get('/logout', 'Auth::logout');
 
 // AI routes
 $routes->get('/ai/duplicates', 'AI::duplicates');
-$routes->match(['get','post'], '/ai/parse', 'AI::parse');
+$routes->match(['GET','POST'], '/ai/parse', 'AI::parse');
 
 // Org routes
 $routes->get('/org', 'Org::index');
-$routes->match(['get','post'], '/org/create', 'Org::create');
+$routes->match(['GET','POST'], '/org/create', 'Org::create');
 $routes->get('/org/select/(:segment)', 'Org::select/$1');
 $routes->get('/org/clear', 'Org::clear');
 

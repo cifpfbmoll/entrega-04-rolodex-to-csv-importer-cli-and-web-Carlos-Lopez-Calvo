@@ -19,7 +19,10 @@ class Auth extends BaseController
 
     public function login()
     {
-        if ($this->request->getMethod() === 'post') {
+        // Verificar si es POST
+        $method = $this->request->getMethod();
+        
+        if (strtolower($method) === 'post') {
             $email = strtolower(trim($this->request->getPost('email') ?? ''));
             $password = (string) ($this->request->getPost('password') ?? '');
 
@@ -32,21 +35,30 @@ class Auth extends BaseController
                 return redirect()->back()->with('error', 'Credenciales inválidas')->withInput();
             }
 
+            // Usuario autenticado correctamente
             session()->set('user', [
                 'id' => $user['id'],
                 'email' => $user['email'],
                 'name' => $user['name'] ?? ''
             ]);
-
-            return redirect()->to('/contacts')->with('success', 'Bienvenido de nuevo');
+            
+            // Guardar flashdata
+            session()->setFlashdata('success', 'Bienvenido de nuevo');
+            
+            // Redirect usando el método de CodeIgniter
+            return redirect()->to('/contacts');
         }
 
+        // Si no es POST, mostrar el formulario
         return view('auth/login');
     }
 
     public function register()
     {
-        if ($this->request->getMethod() === 'post') {
+        // Verificar si es POST
+        $method = $this->request->getMethod();
+        
+        if (strtolower($method) === 'post') {
             $name = trim($this->request->getPost('name') ?? '');
             $email = strtolower(trim($this->request->getPost('email') ?? ''));
             $password = (string) ($this->request->getPost('password') ?? '');
@@ -98,7 +110,12 @@ class Auth extends BaseController
                 'email' => $email,
                 'name' => $name
             ]);
-            return redirect()->to('/contacts')->with('success', 'Registro completado');
+            
+            // Guardar flashdata
+            session()->setFlashdata('success', 'Registro completado');
+            
+            // Redirect usando el método de CodeIgniter
+            return redirect()->to('/contacts');
         }
 
         return view('auth/register');

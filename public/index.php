@@ -85,17 +85,62 @@ require FCPATH . '../app/Config/Paths.php';
 // ^^^ Change this line if you move your application folder
 $paths = new Config\Paths();
 
-// LOAD THE FRAMEWORK BOOTSTRAP FILE
-require rtrim($paths->systemDirectory, '\\/ ') . DIRECTORY_SEPARATOR . 'bootstrap.php';
-
-// LOAD ENVIRONMENT SETTINGS FROM .env FILES INTO $_SERVER AND $_ENV
-require_once SYSTEMPATH . 'Config/DotEnv.php';
-(new CodeIgniter\Config\DotEnv(ROOTPATH))->load();
-
-// DEFINE ENVIRONMENT
-if (! defined('ENVIRONMENT')) {
-    define('ENVIRONMENT', env('CI_ENVIRONMENT', 'production'));
+// Define path constants early (needed for .env loading and autoloader)
+if (! defined('ROOTPATH')) {
+    define('ROOTPATH', realpath(FCPATH . '../') . DIRECTORY_SEPARATOR);
 }
+if (! defined('APPPATH')) {
+    define('APPPATH', realpath($paths->appDirectory) . DIRECTORY_SEPARATOR);
+}
+if (! defined('SYSTEMPATH')) {
+    define('SYSTEMPATH', realpath($paths->systemDirectory) . DIRECTORY_SEPARATOR);
+}
+
+// Load .env manually to ensure ENVIRONMENT is available
+if (file_exists(ROOTPATH . '.env')) {
+    $envFile = file_get_contents(ROOTPATH . '.env');
+    foreach (explode("\n", $envFile) as $line) {
+        $line = trim($line);
+        if (empty($line) || strpos($line, '#') === 0) {
+            continue;
+        }
+        if (strpos($line, '=') !== false) {
+            list($key, $value) = explode('=', $line, 2);
+            $key = trim($key);
+            $value = trim($value, " \t\n\r\0\x0B\"'");
+            if ($key === 'CI_ENVIRONMENT') {
+                $_ENV[$key] = $value;
+                $_SERVER[$key] = $value;
+                putenv("$key=$value");
+            }
+        }
+    }
+}
+
+// Define ENVIRONMENT early to ensure it's available when loadEnvironmentBootstrap() is called
+if (! defined('ENVIRONMENT')) {
+    $env = $_ENV['CI_ENVIRONMENT'] ?? $_SERVER['CI_ENVIRONMENT'] ?? getenv('CI_ENVIRONMENT') ?: 'development';
+    define('ENVIRONMENT', $env);
+}
+
+// Load Composer autoloader first (needed for CodeIgniter namespace)
+if (file_exists(ROOTPATH . 'vendor/autoload.php')) {
+    require_once ROOTPATH . 'vendor/autoload.php';
+}
+
+// Load Constants file (defines APP_NAMESPACE and other constants)
+if (file_exists(APPPATH . 'Config/Constants.php')) {
+    require APPPATH . 'Config/Constants.php';
+}
+
+// Define APP_NAMESPACE if not already defined
+if (! defined('APP_NAMESPACE')) {
+    define('APP_NAMESPACE', 'App');
+}
+
+
+// LOAD THE FRAMEWORK BOOT FILE (CodeIgniter 4.5+)
+require rtrim($paths->systemDirectory, '\\/ ') . DIRECTORY_SEPARATOR . 'Boot.php';
 
 /*
  *---------------------------------------------------------------
@@ -105,10 +150,4 @@ if (! defined('ENVIRONMENT')) {
  * Now that everything is setup, it's time to actually fire
  * up the engines and make this app do its thang.
  */
-$app = new CodeIgniter\CodeIgniter($paths);
-$app->initialize();
-$context = is_cli() ? 'php-cli' : 'web';
-$app->setContext($context);
-
-$response = $app->run();
-$response->send();
+CodeIgniter\Boot::bootWeb($paths);

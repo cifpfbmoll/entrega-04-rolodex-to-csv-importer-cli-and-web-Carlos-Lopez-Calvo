@@ -1,0 +1,37 @@
+services:
+  web:
+    build: .
+    container_name: clvmax-web
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/var/www/html
+      - ./writable:/var/www/html/writable
+    working_dir: /var/www/html
+    command: php -S 0.0.0.0:8080 -t public
+    environment:
+      - CI_ENVIRONMENT=development
+    networks:
+      - clvmax-network
+    stdin_open: true
+    tty: true
+
+  cli:
+    build: .
+    container_name: clvmax-cli
+    volumes:
+      - .:/var/www/html
+      - ./writable:/var/www/html/writable
+    working_dir: /var/www/html
+    command: tail -f /dev/null
+    environment:
+      - CI_ENVIRONMENT=development
+    networks:
+      - clvmax-network
+    stdin_open: true
+    tty: true
+
+networks:
+  clvmax-network:
+    driver: bridge
+
